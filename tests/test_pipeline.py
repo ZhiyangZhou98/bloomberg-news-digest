@@ -65,6 +65,15 @@ def test_parse_extracts_text_links_and_charts():
     assert "rfc822msgid" in p.gmail_url
 
 
+def test_skip_subscription_subjects():
+    from digest.gmail_client import SKIP_SUBJECT_RE
+    assert SKIP_SUBJECT_RE.search("You've subscribed!")
+    assert SKIP_SUBJECT_RE.search("You’ve subscribed!")
+    assert SKIP_SUBJECT_RE.search("Welcome to Markets Daily")
+    assert not SKIP_SUBJECT_RE.search("Claude cash")
+    assert not SKIP_SUBJECT_RE.search("Stocks welcome Fed cut")
+
+
 def test_dkim_check():
     assert dkim_ok(make_msg())
     assert not dkim_ok(make_msg("mx.google.com; dkim=fail header.i=@news.bloomberg.com"))

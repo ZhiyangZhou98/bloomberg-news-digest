@@ -28,7 +28,10 @@ only if none fits, invent a snake_case key and fill suggested_etfs with well-kno
 (include leveraged/inverse ones only if you are sure they exist).
 - macro: for economic/policy news (data releases, central banks, fiscal policy, geopolitics, trade), the likely \
 market impact and which sectors benefit vs. are hurt.
-- link_ids / chart_ids: the [L#] links and [Chart C#] images in the email that belong to this story.
+- link_ids: the [L#] links in the email that belong to this story (prefer links to the full Bloomberg stories).
+- chart_ids: the [Chart C#] images that belong to this story AND are real data visualisations (charts, graphs, \
+data tables). Every image is labelled "Chart", but many are photos, illustrations, logos, banners or ads: never \
+list those.
 
 Signals (based only on the news itself, short-to-medium term):
 - bullish = the news is clearly positive for the price; bearish = clearly negative;

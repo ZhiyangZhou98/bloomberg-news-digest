@@ -34,10 +34,12 @@ def run(args: argparse.Namespace) -> int:
     test_mode = args.dry_run or args.no_send
 
     with GmailClient(cfg) as gmail:
-        raw = gmail.fetch_new(args.lookback_days, include_processed=args.include_processed,
-                              limit=cfg.max_emails_per_run)
+        raw, admin_uids = gmail.fetch_new(args.lookback_days, include_processed=args.include_processed,
+                                          limit=cfg.max_emails_per_run)
+        if admin_uids and not test_mode:
+            gmail.mark_processed(admin_uids)
         if not raw:
-            log.info("No new Bloomberg emails. Nothing to do.")
+            log.info("No new Bloomberg news emails. Nothing to do.")
             return 0
 
         ids = IdCounter()

@@ -17,6 +17,13 @@ log = logging.getLogger(__name__)
 IMAP_HOST = "imap.gmail.com"
 SMTP_HOST = "smtp.gmail.com"
 
+# Subscription admin emails (no news): labelled as processed without analysis.
+SKIP_SUBJECT_RE = re.compile(
+    r"^\s*(you'?ve subscribed|you’ve subscribed|welcome|confirm|please confirm|thanks for (subscribing|signing up)|"
+    r"your subscription|you('| a)re (now )?subscribed)",
+    re.I,
+)
+
 # Authentication-Results must show a passing DKIM signature from a Bloomberg domain.
 _DKIM_RE = re.compile(r"dkim=pass[^;]*header\.(?:i|d)=@?(?:[\w-]+\.)*bloomberg\.(?:com|net)\b", re.I)
 
@@ -78,8 +85,13 @@ class GmailClient:
                         return f'"{m.group(1)}"'
         return "INBOX"
 
-    def fetch_new(self, lookback_days: int, include_processed: bool = False, limit: int = 12) -> list[RawEmail]:
-        """Bloomberg emails from the last N days that don't have the processed label (oldest first)."""
+    def fetch_new(
+        self, lookback_days: int, include_processed: bool = False, limit: int = 12
+    ) -> tuple[list[RawEmail], list[str]]:
+        """Bloomberg emails from the last N days without the processed label (oldest first).
+
+        Returns (emails to analyse, UIDs of subscription-admin emails to just label).
+        """
         query = f"from:{self.cfg.bloomberg_sender} newer_than:{lookback_days}d"
         if not include_processed:
             query += f" -label:{self.cfg.processed_label}"
@@ -88,12 +100,13 @@ class GmailClient:
             raise RuntimeError(f"IMAP search failed: {data}")
         uids = data[0].split() if data and data[0] else []
         log.info("Search %r -> %d email(s)", query, len(uids))
-        if len(uids) > limit:
-            log.info("Processing the oldest %d now; the rest wait for the next run", limit)
-            uids = uids[:limit]
 
         emails: list[RawEmail] = []
+        admin_uids: list[str] = []
         for uid in uids:
+            if len(emails) >= limit:
+                log.info("Reached %d emails; the rest wait for the next run", limit)
+                break
             uid_s = uid.decode()
             # BODY.PEEK keeps the email unread in Gmail.
             typ, parts = self.imap.uid("FETCH", uid_s, "(BODY.PEEK[])")
@@ -104,8 +117,12 @@ class GmailClient:
             if self.cfg.require_dkim and not dkim_ok(msg):
                 log.warning("Skipping UID %s (%s): no passing Bloomberg DKIM signature", uid_s, msg.get("Subject"))
                 continue
+            if SKIP_SUBJECT_RE.search(str(msg.get("Subject", ""))):
+                log.info("Skipping subscription email UID %s: %r", uid_s, str(msg.get("Subject")))
+                admin_uids.append(uid_s)
+                continue
             emails.append(RawEmail(uid=uid_s, message=msg))
-        return emails
+        return emails, admin_uids
 
     def mark_processed(self, uids: list[str]) -> None:
         if not uids:

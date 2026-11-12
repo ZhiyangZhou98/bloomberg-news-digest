@@ -54,9 +54,10 @@ jobs:
           INCLUDE_PROCESSED: ${{ inputs.include_processed }}
         run: |
           ARGS="--lookback-days ${LOOKBACK:-1}"
-          if [ "$EVENT" = "workflow_dispatch" ] && [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
-          # Safety: anything not on master is always a test run, so testing never consumes production emails.
-          if [ "$GITHUB_REF_NAME" != "master" ]; then ARGS="$ARGS --dry-run"; fi
+          # Dry run when asked, and always off master, so testing never consumes production emails.
+          if { [ "$EVENT" = "workflow_dispatch" ] && [ "$DRY_RUN" = "true" ]; } || [ "$GITHUB_REF_NAME" != "master" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
           if [ "$INCLUDE_PROCESSED" = "true" ]; then ARGS="$ARGS --include-processed"; fi
           echo "python -m digest.main $ARGS"
           python -m digest.main $ARGS

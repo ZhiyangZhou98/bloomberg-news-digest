@@ -85,17 +85,7 @@ def build_views(analysis: DigestAnalysis, emails: list[ParsedEmail], etf_map: di
                 "ai_suggested": mapped is None,
             })
         views.append(v)
-
-    # Bloomberg charts no story claimed: show them under the first story from the same email.
-    for e in emails:
-        leftovers = [c for c in e.charts if c.id not in used_charts]
-        target = next((v for v in views if v.source.id == e.id), None)
-        if not leftovers or target is None:
-            continue
-        for c in leftovers:
-            used_charts.add(c.id)
-            target.charts.append((_cid(c.id), c.alt))
-            images.append(InlineImage(_cid(c.id), c.data, c.media_type))
+    # Images no story claims (photos, banners, ads) are left out on purpose.
     return views, images
 
 
