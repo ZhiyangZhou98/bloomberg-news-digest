@@ -2,7 +2,9 @@ name: Bloomberg digest
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # every 15 min (UTC). Scheduled runs only fire on the default branch (master).
+    # Backstop only: GitHub's scheduler is unreliable. The main trigger is apps_script/Code.gs,
+    # which starts this workflow (workflow_dispatch) when a new Bloomberg email arrives.
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -62,13 +64,10 @@ jobs:
           echo "python -m digest.main $ARGS"
           python -m digest.main $ARGS
 
-      # GitHub disables schedules in public repos after 60 days without commits.
-      # Re-enabling the workflow once a day (00:00-00:14 UTC run) keeps it alive.
-      - name: Keep schedule alive
-        if: github.event_name == 'schedule' && always()
+      # GitHub disables workflows with a schedule in public repos after 60 days without commits,
+      # which would also block the Apps Script trigger. Re-enabling on each production run keeps it alive.
+      - name: Keep workflow enabled
+        if: github.ref_name == 'master' && always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          if [ "$(date -u +%H)" = "00" ] && [ "$(date -u +%M)" -lt 15 ]; then
-            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/digest.yml/enable" || true
-          fi
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/digest.yml/enable" || true
