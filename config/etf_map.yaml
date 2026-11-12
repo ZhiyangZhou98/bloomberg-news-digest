@@ -1,0 +1,332 @@
+# Curated sector -> popular US-listed ETFs.
+# leverage: 1x = plain ETF; 2x/3x = leveraged long; -1x/-2x/-3x = inverse.
+# Leveraged/inverse ETFs reset daily and decay over time; they suit short-term trades only.
+# Edit freely: Claude picks sector keys from this list, and the report shows these tickers.
+sectors:
+  us_large_cap:
+    name: US Large Cap (S&P 500)
+    etfs:
+      - {ticker: SPY, name: SPDR S&P 500, leverage: 1x}
+      - {ticker: VOO, name: Vanguard S&P 500, leverage: 1x}
+      - {ticker: UPRO, name: ProShares UltraPro S&P 500, leverage: 3x}
+      - {ticker: SPXU, name: ProShares UltraPro Short S&P 500, leverage: -3x}
+  us_tech_nasdaq:
+    name: Nasdaq 100 / Big Tech
+    etfs:
+      - {ticker: QQQ, name: Invesco QQQ, leverage: 1x}
+      - {ticker: TQQQ, name: ProShares UltraPro QQQ, leverage: 3x}
+      - {ticker: SQQQ, name: ProShares UltraPro Short QQQ, leverage: -3x}
+  us_small_cap:
+    name: US Small Cap (Russell 2000)
+    etfs:
+      - {ticker: IWM, name: iShares Russell 2000, leverage: 1x}
+      - {ticker: TNA, name: Direxion Daily Small Cap Bull 3X, leverage: 3x}
+      - {ticker: TZA, name: Direxion Daily Small Cap Bear 3X, leverage: -3x}
+  dow_industrials:
+    name: Dow Jones Industrial Average
+    etfs:
+      - {ticker: DIA, name: SPDR Dow Jones Industrial Average, leverage: 1x}
+      - {ticker: UDOW, name: ProShares UltraPro Dow30, leverage: 3x}
+      - {ticker: SDOW, name: ProShares UltraPro Short Dow30, leverage: -3x}
+  technology:
+    name: Technology
+    etfs:
+      - {ticker: XLK, name: Technology Select Sector SPDR, leverage: 1x}
+      - {ticker: VGT, name: Vanguard Information Technology, leverage: 1x}
+      - {ticker: TECL, name: Direxion Daily Technology Bull 3X, leverage: 3x}
+      - {ticker: TECS, name: Direxion Daily Technology Bear 3X, leverage: -3x}
+  semiconductors:
+    name: Semiconductors
+    etfs:
+      - {ticker: SMH, name: VanEck Semiconductor, leverage: 1x}
+      - {ticker: SOXX, name: iShares Semiconductor, leverage: 1x}
+      - {ticker: SOXL, name: Direxion Daily Semiconductor Bull 3X, leverage: 3x}
+      - {ticker: SOXS, name: Direxion Daily Semiconductor Bear 3X, leverage: -3x}
+  software:
+    name: Software
+    etfs:
+      - {ticker: IGV, name: iShares Expanded Tech-Software, leverage: 1x}
+  ai_robotics:
+    name: AI & Robotics
+    etfs:
+      - {ticker: BOTZ, name: Global X Robotics & AI, leverage: 1x}
+      - {ticker: AIQ, name: Global X Artificial Intelligence & Technology, leverage: 1x}
+  cybersecurity:
+    name: Cybersecurity
+    etfs:
+      - {ticker: CIBR, name: First Trust NASDAQ Cybersecurity, leverage: 1x}
+      - {ticker: HACK, name: Amplify Cybersecurity, leverage: 1x}
+  communication_services:
+    name: Communication Services / Media
+    etfs:
+      - {ticker: XLC, name: Communication Services Select Sector SPDR, leverage: 1x}
+      - {ticker: VOX, name: Vanguard Communication Services, leverage: 1x}
+  financials:
+    name: Financials / Banks
+    etfs:
+      - {ticker: XLF, name: Financial Select Sector SPDR, leverage: 1x}
+      - {ticker: KBE, name: SPDR S&P Bank, leverage: 1x}
+      - {ticker: FAS, name: Direxion Daily Financial Bull 3X, leverage: 3x}
+      - {ticker: FAZ, name: Direxion Daily Financial Bear 3X, leverage: -3x}
+  regional_banks:
+    name: US Regional Banks
+    etfs:
+      - {ticker: KRE, name: SPDR S&P Regional Banking, leverage: 1x}
+      - {ticker: DPST, name: Direxion Daily Regional Banks Bull 3X, leverage: 3x}
+  insurance:
+    name: Insurance
+    etfs:
+      - {ticker: KIE, name: SPDR S&P Insurance, leverage: 1x}
+  energy_oil_gas:
+    name: Energy (Oil & Gas Equities)
+    etfs:
+      - {ticker: XLE, name: Energy Select Sector SPDR, leverage: 1x}
+      - {ticker: XOP, name: SPDR S&P Oil & Gas Exploration & Production, leverage: 1x}
+      - {ticker: ERX, name: Direxion Daily Energy Bull 2X, leverage: 2x}
+      - {ticker: ERY, name: Direxion Daily Energy Bear 2X, leverage: -2x}
+      - {ticker: GUSH, name: Direxion Daily S&P Oil & Gas E&P Bull 2X, leverage: 2x}
+      - {ticker: DRIP, name: Direxion Daily S&P Oil & Gas E&P Bear 2X, leverage: -2x}
+  crude_oil:
+    name: Crude Oil (commodity)
+    etfs:
+      - {ticker: USO, name: United States Oil Fund, leverage: 1x}
+      - {ticker: UCO, name: ProShares Ultra Bloomberg Crude Oil, leverage: 2x}
+      - {ticker: SCO, name: ProShares UltraShort Bloomberg Crude Oil, leverage: -2x}
+  natural_gas:
+    name: Natural Gas (commodity)
+    etfs:
+      - {ticker: UNG, name: United States Natural Gas Fund, leverage: 1x}
+      - {ticker: BOIL, name: ProShares Ultra Bloomberg Natural Gas, leverage: 2x}
+      - {ticker: KOLD, name: ProShares UltraShort Bloomberg Natural Gas, leverage: -2x}
+  gold:
+    name: Gold
+    etfs:
+      - {ticker: GLD, name: SPDR Gold Shares, leverage: 1x}
+      - {ticker: IAU, name: iShares Gold Trust, leverage: 1x}
+      - {ticker: UGL, name: ProShares Ultra Gold, leverage: 2x}
+      - {ticker: GLL, name: ProShares UltraShort Gold, leverage: -2x}
+  gold_miners:
+    name: Gold Miners
+    etfs:
+      - {ticker: GDX, name: VanEck Gold Miners, leverage: 1x}
+      - {ticker: GDXJ, name: VanEck Junior Gold Miners, leverage: 1x}
+      - {ticker: NUGT, name: Direxion Daily Gold Miners Bull 2X, leverage: 2x}
+      - {ticker: DUST, name: Direxion Daily Gold Miners Bear 2X, leverage: -2x}
+  silver:
+    name: Silver
+    etfs:
+      - {ticker: SLV, name: iShares Silver Trust, leverage: 1x}
+      - {ticker: AGQ, name: ProShares Ultra Silver, leverage: 2x}
+      - {ticker: ZSL, name: ProShares UltraShort Silver, leverage: -2x}
+  copper_metals_mining:
+    name: Copper / Metals & Mining
+    etfs:
+      - {ticker: COPX, name: Global X Copper Miners, leverage: 1x}
+      - {ticker: CPER, name: United States Copper Index Fund, leverage: 1x}
+      - {ticker: XME, name: SPDR S&P Metals & Mining, leverage: 1x}
+  uranium_nuclear:
+    name: Uranium / Nuclear
+    etfs:
+      - {ticker: URA, name: Global X Uranium, leverage: 1x}
+      - {ticker: URNM, name: Sprott Uranium Miners, leverage: 1x}
+      - {ticker: NLR, name: VanEck Uranium and Nuclear, leverage: 1x}
+  clean_energy:
+    name: Clean Energy / Solar
+    etfs:
+      - {ticker: ICLN, name: iShares Global Clean Energy, leverage: 1x}
+      - {ticker: TAN, name: Invesco Solar, leverage: 1x}
+  ev_batteries:
+    name: EVs, Batteries & Lithium
+    etfs:
+      - {ticker: LIT, name: Global X Lithium & Battery Tech, leverage: 1x}
+      - {ticker: DRIV, name: Global X Autonomous & Electric Vehicles, leverage: 1x}
+  healthcare:
+    name: Healthcare
+    etfs:
+      - {ticker: XLV, name: Health Care Select Sector SPDR, leverage: 1x}
+      - {ticker: VHT, name: Vanguard Health Care, leverage: 1x}
+      - {ticker: CURE, name: Direxion Daily Healthcare Bull 3X, leverage: 3x}
+  biotech:
+    name: Biotech
+    etfs:
+      - {ticker: XBI, name: SPDR S&P Biotech, leverage: 1x}
+      - {ticker: IBB, name: iShares Biotechnology, leverage: 1x}
+      - {ticker: LABU, name: Direxion Daily S&P Biotech Bull 3X, leverage: 3x}
+      - {ticker: LABD, name: Direxion Daily S&P Biotech Bear 3X, leverage: -3x}
+  pharma:
+    name: Pharmaceuticals
+    etfs:
+      - {ticker: XPH, name: SPDR S&P Pharmaceuticals, leverage: 1x}
+      - {ticker: IHE, name: iShares U.S. Pharmaceuticals, leverage: 1x}
+  consumer_discretionary:
+    name: Consumer Discretionary
+    etfs:
+      - {ticker: XLY, name: Consumer Discretionary Select Sector SPDR, leverage: 1x}
+      - {ticker: VCR, name: Vanguard Consumer Discretionary, leverage: 1x}
+      - {ticker: WANT, name: Direxion Daily Consumer Discretionary Bull 3X, leverage: 3x}
+  retail:
+    name: Retail
+    etfs:
+      - {ticker: XRT, name: SPDR S&P Retail, leverage: 1x}
+      - {ticker: RETL, name: Direxion Daily Retail Bull 3X, leverage: 3x}
+  consumer_staples:
+    name: Consumer Staples
+    etfs:
+      - {ticker: XLP, name: Consumer Staples Select Sector SPDR, leverage: 1x}
+      - {ticker: VDC, name: Vanguard Consumer Staples, leverage: 1x}
+  industrials:
+    name: Industrials
+    etfs:
+      - {ticker: XLI, name: Industrial Select Sector SPDR, leverage: 1x}
+      - {ticker: VIS, name: Vanguard Industrials, leverage: 1x}
+      - {ticker: DUSL, name: Direxion Daily Industrials Bull 3X, leverage: 3x}
+  aerospace_defense:
+    name: Aerospace & Defense
+    etfs:
+      - {ticker: ITA, name: iShares U.S. Aerospace & Defense, leverage: 1x}
+      - {ticker: XAR, name: SPDR S&P Aerospace & Defense, leverage: 1x}
+      - {ticker: DFEN, name: Direxion Daily Aerospace & Defense Bull 3X, leverage: 3x}
+  transportation_airlines:
+    name: Transportation / Airlines
+    etfs:
+      - {ticker: IYT, name: iShares U.S. Transportation, leverage: 1x}
+      - {ticker: JETS, name: U.S. Global Jets, leverage: 1x}
+  materials:
+    name: Materials / Chemicals
+    etfs:
+      - {ticker: XLB, name: Materials Select Sector SPDR, leverage: 1x}
+      - {ticker: VAW, name: Vanguard Materials, leverage: 1x}
+  steel:
+    name: Steel
+    etfs:
+      - {ticker: SLX, name: VanEck Steel, leverage: 1x}
+  utilities:
+    name: Utilities
+    etfs:
+      - {ticker: XLU, name: Utilities Select Sector SPDR, leverage: 1x}
+      - {ticker: VPU, name: Vanguard Utilities, leverage: 1x}
+      - {ticker: UTSL, name: Direxion Daily Utilities Bull 3X, leverage: 3x}
+  real_estate:
+    name: Real Estate / REITs
+    etfs:
+      - {ticker: XLRE, name: Real Estate Select Sector SPDR, leverage: 1x}
+      - {ticker: VNQ, name: Vanguard Real Estate, leverage: 1x}
+      - {ticker: DRN, name: Direxion Daily Real Estate Bull 3X, leverage: 3x}
+      - {ticker: DRV, name: Direxion Daily Real Estate Bear 3X, leverage: -3x}
+  homebuilders:
+    name: Homebuilders
+    etfs:
+      - {ticker: XHB, name: SPDR S&P Homebuilders, leverage: 1x}
+      - {ticker: ITB, name: iShares U.S. Home Construction, leverage: 1x}
+      - {ticker: NAIL, name: Direxion Daily Homebuilders & Supplies Bull 3X, leverage: 3x}
+  agriculture:
+    name: Agriculture
+    etfs:
+      - {ticker: DBA, name: Invesco DB Agriculture Fund, leverage: 1x}
+      - {ticker: MOO, name: VanEck Agribusiness, leverage: 1x}
+  long_treasuries:
+    name: Long-Term US Treasuries
+    etfs:
+      - {ticker: TLT, name: iShares 20+ Year Treasury Bond, leverage: 1x}
+      - {ticker: TMF, name: Direxion Daily 20+ Year Treasury Bull 3X, leverage: 3x}
+      - {ticker: TBT, name: ProShares UltraShort 20+ Year Treasury, leverage: -2x}
+      - {ticker: TMV, name: Direxion Daily 20+ Year Treasury Bear 3X, leverage: -3x}
+  intermediate_treasuries:
+    name: Intermediate US Treasuries
+    etfs:
+      - {ticker: IEF, name: iShares 7-10 Year Treasury Bond, leverage: 1x}
+  short_treasuries_cash:
+    name: Short-Term Treasuries / Cash
+    etfs:
+      - {ticker: SGOV, name: iShares 0-3 Month Treasury Bond, leverage: 1x}
+      - {ticker: SHY, name: iShares 1-3 Year Treasury Bond, leverage: 1x}
+  corporate_credit:
+    name: Corporate Credit (IG / High Yield)
+    etfs:
+      - {ticker: LQD, name: iShares iBoxx Investment Grade Corporate Bond, leverage: 1x}
+      - {ticker: HYG, name: iShares iBoxx High Yield Corporate Bond, leverage: 1x}
+      - {ticker: JNK, name: SPDR Bloomberg High Yield Bond, leverage: 1x}
+  us_dollar:
+    name: US Dollar
+    etfs:
+      - {ticker: UUP, name: Invesco DB US Dollar Index Bullish, leverage: 1x}
+      - {ticker: UDN, name: Invesco DB US Dollar Index Bearish, leverage: -1x}
+  japanese_yen:
+    name: Japanese Yen
+    etfs:
+      - {ticker: FXY, name: Invesco CurrencyShares Japanese Yen, leverage: 1x}
+  euro:
+    name: Euro
+    etfs:
+      - {ticker: FXE, name: Invesco CurrencyShares Euro, leverage: 1x}
+  volatility:
+    name: Volatility (VIX)
+    etfs:
+      - {ticker: VIXY, name: ProShares VIX Short-Term Futures, leverage: 1x}
+      - {ticker: UVXY, name: ProShares Ultra VIX Short-Term Futures, leverage: 1.5x}
+      - {ticker: SVXY, name: ProShares Short VIX Short-Term Futures, leverage: -0.5x}
+  bitcoin_crypto:
+    name: Bitcoin / Crypto
+    etfs:
+      - {ticker: IBIT, name: iShares Bitcoin Trust, leverage: 1x}
+      - {ticker: ETHA, name: iShares Ethereum Trust, leverage: 1x}
+      - {ticker: BITX, name: Volatility Shares 2x Bitcoin Strategy, leverage: 2x}
+  china:
+    name: China / Hong Kong Equities
+    etfs:
+      - {ticker: FXI, name: iShares China Large-Cap, leverage: 1x}
+      - {ticker: MCHI, name: iShares MSCI China, leverage: 1x}
+      - {ticker: KWEB, name: KraneShares CSI China Internet, leverage: 1x}
+      - {ticker: YINN, name: Direxion Daily FTSE China Bull 3X, leverage: 3x}
+      - {ticker: YANG, name: Direxion Daily FTSE China Bear 3X, leverage: -3x}
+  japan:
+    name: Japan Equities
+    etfs:
+      - {ticker: EWJ, name: iShares MSCI Japan, leverage: 1x}
+      - {ticker: DXJ, name: WisdomTree Japan Hedged Equity, leverage: 1x}
+      - {ticker: EZJ, name: ProShares Ultra MSCI Japan, leverage: 2x}
+  europe:
+    name: Europe Equities
+    etfs:
+      - {ticker: VGK, name: Vanguard FTSE Europe, leverage: 1x}
+      - {ticker: EZU, name: iShares MSCI Eurozone, leverage: 1x}
+      - {ticker: EURL, name: Direxion Daily FTSE Europe Bull 3X, leverage: 3x}
+  uk:
+    name: UK Equities
+    etfs:
+      - {ticker: EWU, name: iShares MSCI United Kingdom, leverage: 1x}
+  germany:
+    name: Germany Equities
+    etfs:
+      - {ticker: EWG, name: iShares MSCI Germany, leverage: 1x}
+  emerging_markets:
+    name: Emerging Markets
+    etfs:
+      - {ticker: EEM, name: iShares MSCI Emerging Markets, leverage: 1x}
+      - {ticker: VWO, name: Vanguard FTSE Emerging Markets, leverage: 1x}
+      - {ticker: EDC, name: Direxion Daily MSCI Emerging Markets Bull 3X, leverage: 3x}
+      - {ticker: EDZ, name: Direxion Daily MSCI Emerging Markets Bear 3X, leverage: -3x}
+  india:
+    name: India Equities
+    etfs:
+      - {ticker: INDA, name: iShares MSCI India, leverage: 1x}
+      - {ticker: EPI, name: WisdomTree India Earnings, leverage: 1x}
+      - {ticker: INDL, name: Direxion Daily MSCI India Bull 2X, leverage: 2x}
+  south_korea:
+    name: South Korea Equities
+    etfs:
+      - {ticker: EWY, name: iShares MSCI South Korea, leverage: 1x}
+  taiwan:
+    name: Taiwan Equities
+    etfs:
+      - {ticker: EWT, name: iShares MSCI Taiwan, leverage: 1x}
+  brazil_latam:
+    name: Brazil / Latin America
+    etfs:
+      - {ticker: EWZ, name: iShares MSCI Brazil, leverage: 1x}
+      - {ticker: ILF, name: iShares Latin America 40, leverage: 1x}
+      - {ticker: BRZU, name: Direxion Daily MSCI Brazil Bull 2X, leverage: 2x}
+  mexico:
+    name: Mexico Equities
+    etfs:
+      - {ticker: EWW, name: iShares MSCI Mexico, leverage: 1x}

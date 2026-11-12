@@ -1,0 +1,73 @@
+name: Bloomberg digest
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 min (UTC). Scheduled runs only fire on the default branch (master).
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Test run: send a [TEST] digest, don't label emails as processed"
+        type: boolean
+        default: true
+      lookback_days:
+        description: "Only consider emails newer than N days"
+        type: string
+        default: "1"
+      include_processed:
+        description: "Also include emails already labelled as processed"
+        type: boolean
+        default: false
+
+concurrency:
+  group: bloomberg-digest
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write   # only used to keep the schedule enabled (see last step)
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          REPORT_TIMEZONE: ${{ vars.REPORT_TIMEZONE }}
+          PYTHONPATH: src
+          EVENT: ${{ github.event_name }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          LOOKBACK: ${{ inputs.lookback_days }}
+          INCLUDE_PROCESSED: ${{ inputs.include_processed }}
+        run: |
+          ARGS="--lookback-days ${LOOKBACK:-1}"
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          # Safety: anything not on master is always a test run, so testing never consumes production emails.
+          if [ "$GITHUB_REF_NAME" != "master" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ "$INCLUDE_PROCESSED" = "true" ]; then ARGS="$ARGS --include-processed"; fi
+          echo "python -m digest.main $ARGS"
+          python -m digest.main $ARGS
+
+      # GitHub disables schedules in public repos after 60 days without commits.
+      # Re-enabling the workflow once a day (00:00-00:14 UTC run) keeps it alive.
+      - name: Keep schedule alive
+        if: github.event_name == 'schedule' && always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(date -u +%H)" = "00" ] && [ "$(date -u +%M)" -lt 15 ]; then
+            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/digest.yml/enable" || true
+          fi

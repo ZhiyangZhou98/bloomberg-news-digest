@@ -1,0 +1,32 @@
+{% if test %}[TEST RUN]
+{% endif %}BLOOMBERG MARKET DIGEST - {{ generated }}
+
+TOP TAKEAWAYS
+{% for t in analysis.top_takeaways %}- {{ t }}
+{% endfor %}
+{% for v in views %}
+------------------------------------------------------------
+{{ v.item.headline }}
+Source: {{ v.source.subject }} ({{ v.source_time }})
+
+{{ v.item.summary }}
+{% if v.item.key_figures %}
+Key figures:
+{% for f in v.item.key_figures %}  - {{ f }}
+{% endfor %}{% endif %}{% if v.item.stocks %}
+Stocks:
+{% for s in v.item.stocks %}  {{ s.ticker }} [{{ signal_style[s.signal][1] }}] {{ s.name }}: {{ s.reason }}
+{% endfor %}{% endif %}{% if v.industries %}
+Industries & ETFs:
+{% for ind in v.industries %}  {{ ind.name }} [{{ signal_style[ind.signal][1] }}] {{ ind.reason }}
+    ETFs: {% for e in ind.etfs %}{{ e.ticker }}{% if e.leverage != '1x' %} ({{ e.leverage }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endfor %}{% endif %}{% if v.item.macro %}
+Macro impact:
+{% for m in v.item.macro %}  {{ m.event }}: {{ m.market_impact }}
+    Benefits: {{ m.sectors_benefit|join(', ') }} | Hurt: {{ m.sectors_hurt|join(', ') }}
+{% endfor %}{% endif %}{% if v.links %}
+Read more:
+{% for l in v.links %}  {{ l[0] }}: {{ l[1] }}
+{% endfor %}{% endif %}{% endfor %}
+------------------------------------------------------------
+AI-generated from the news only. Not financial advice.

@@ -1,0 +1,108 @@
+{%- macro pill(sig) -%}
+{%- set s = signal_style[sig] -%}
+<span style="display:inline-block;background:{{ s[2] }};color:#0b0b0b;padding:1px 8px;border-radius:10px;font-size:12px;white-space:nowrap;">{{ s[0] }} {{ s[1] }}</span>
+{%- endmacro -%}
+{%- macro etf_links(etfs) -%}
+{%- for e in etfs -%}
+<a href="https://finance.yahoo.com/quote/{{ e.ticker }}" style="color:#1c5cab;text-decoration:none;font-weight:bold;">{{ e.ticker }}</a>{% if e.leverage != '1x' %} <span style="color:#52514e;font-size:11px;">({{ e.leverage }})</span>{% endif %}{% if not loop.last %} &middot; {% endif %}
+{%- endfor -%}
+{%- endmacro -%}
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f9f9f7;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0b0b0b;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f7;">
+<tr><td align="center" style="padding:16px 8px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;background:#fcfcfb;border:1px solid #e4e3df;border-radius:8px;">
+<tr><td style="padding:20px 20px 8px 20px;">
+  {% if test %}<div style="background:#fdf3dc;padding:6px 10px;border-radius:6px;font-size:12px;margin-bottom:10px;">TEST RUN: emails are not marked as processed.</div>{% endif %}
+  <div style="font-size:20px;font-weight:bold;">Bloomberg Market Digest</div>
+  <div style="font-size:12px;color:#52514e;margin-top:2px;">{{ generated }} &middot; {{ emails|length }} source email{{ 's' if emails|length != 1 }}</div>
+</td></tr>
+
+<tr><td style="padding:8px 20px;">
+  <div style="font-size:15px;font-weight:bold;margin-bottom:6px;">Top takeaways</div>
+  <ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.5;">
+  {% for t in analysis.top_takeaways %}<li style="margin-bottom:4px;">{{ t }}</li>{% endfor %}
+  </ul>
+</td></tr>
+
+{% for v in views %}
+<tr><td style="padding:14px 20px;border-top:1px solid #e4e3df;">
+  <div style="font-size:16px;font-weight:bold;line-height:1.3;">{{ v.item.headline }}</div>
+  <div style="font-size:11px;color:#52514e;margin:3px 0 8px 0;">
+    Source: {% if v.source.gmail_url %}<a href="{{ v.source.gmail_url }}" style="color:#52514e;">{{ v.source.subject }}</a>{% else %}{{ v.source.subject }}{% endif %} &middot; {{ v.source_time }}
+  </div>
+  <div style="font-size:14px;line-height:1.5;">{{ v.item.summary }}</div>
+
+  {% if v.item.key_figures %}
+  <div style="font-size:13px;font-weight:bold;margin-top:10px;">Key figures</div>
+  <ul style="margin:4px 0 0 0;padding-left:20px;font-size:13px;line-height:1.5;">
+  {% for f in v.item.key_figures %}<li>{{ f }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  {% for c in v.charts %}
+  <div style="margin-top:10px;"><img src="cid:{{ c[0] }}" alt="{{ c[1] or 'Bloomberg chart' }}" style="max-width:100%;height:auto;border:1px solid #e4e3df;border-radius:4px;"></div>
+  {% endfor %}
+
+  {% if v.item.stocks %}
+  <div style="font-size:13px;font-weight:bold;margin-top:12px;">Stocks</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;margin-top:4px;">
+  {% for s in v.item.stocks %}
+  <tr>
+    <td style="padding:4px 8px 4px 0;vertical-align:top;white-space:nowrap;"><a href="https://finance.yahoo.com/quote/{{ s.ticker }}" style="color:#1c5cab;text-decoration:none;font-weight:bold;">{{ s.ticker }}</a></td>
+    <td style="padding:4px 8px 4px 0;vertical-align:top;">{{ pill(s.signal) }}</td>
+    <td style="padding:4px 0;vertical-align:top;color:#52514e;">{{ s.name }}: {{ s.reason }}</td>
+  </tr>
+  {% endfor %}
+  </table>
+  {% endif %}
+
+  {% if v.industries %}
+  <div style="font-size:13px;font-weight:bold;margin-top:12px;">Industries &amp; ETFs</div>
+  {% for ind in v.industries %}
+  <div style="font-size:13px;margin-top:6px;line-height:1.5;">
+    {{ pill(ind.signal) }} <b>{{ ind.name }}</b>: <span style="color:#52514e;">{{ ind.reason }}</span><br>
+    {% if ind.etfs %}<span style="font-size:12px;">ETFs: {{ etf_links(ind.etfs) }}{% if ind.ai_suggested %} <i style="color:#52514e;">(AI-suggested, verify)</i>{% endif %}</span>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if v.item.macro %}
+  <div style="font-size:13px;font-weight:bold;margin-top:12px;">Macro impact</div>
+  {% for m in v.item.macro %}
+  <div style="font-size:13px;margin-top:4px;line-height:1.5;">
+    <b>{{ m.event }}</b>: {{ m.market_impact }}<br>
+    {% if m.sectors_benefit %}<span style="font-size:12px;">{{ signal_style['bullish'][0] }} Benefits: {{ m.sectors_benefit|join(', ') }}</span><br>{% endif %}
+    {% if m.sectors_hurt %}<span style="font-size:12px;">{{ signal_style['bearish'][0] }} Hurt: {{ m.sectors_hurt|join(', ') }}</span>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if v.links %}
+  <div style="font-size:12px;margin-top:10px;">Read more:
+  {% for l in v.links %}<a href="{{ l[1] }}" style="color:#1c5cab;">{{ l[0] }}</a>{% if not loop.last %} &middot; {% endif %}{% endfor %}
+  </div>
+  {% endif %}
+</td></tr>
+{% endfor %}
+
+{% if price_views %}
+<tr><td style="padding:14px 20px;border-top:1px solid #e4e3df;">
+  <div style="font-size:15px;font-weight:bold;margin-bottom:6px;">1-month price charts</div>
+  {% for p in price_views %}
+  <div style="margin-top:6px;"><img src="cid:{{ p.cid }}" alt="{{ p.ticker }} 1-month price chart" style="max-width:100%;height:auto;"></div>
+  {% endfor %}
+</td></tr>
+{% endif %}
+
+<tr><td style="padding:14px 20px 20px 20px;border-top:1px solid #e4e3df;font-size:11px;color:#52514e;line-height:1.5;">
+  Signals are short-to-medium term views generated by AI from the news only. Bullish sector &rarr; long ETFs; bearish &rarr; inverse (negative-leverage) ETFs.
+  Leveraged and inverse ETFs reset daily and decay over time. Not financial advice: do your own research.
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>
