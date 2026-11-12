@@ -42,6 +42,8 @@ def run(args: argparse.Namespace) -> int:
             log.info("No new Bloomberg news emails. Nothing to do.")
             return 0
 
+        for r in raw:
+            log.info("Found UID %s from %s: %r", r.uid, r.message.get("From"), r.subject)
         ids = IdCounter()
         parsed = [parse_email(r.message, f"E{i}", r.uid, ids) for i, r in enumerate(raw, start=1)]
         for p in parsed:
